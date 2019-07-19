@@ -1,0 +1,39 @@
+---
+# リモートマシンにSShで接続するときのユーザー名
+remote_user: ansible
+
+# mysqlのrootパスワード
+mysql_root_password: mysql_root_password
+
+# laravelで使用するデータベース名、ユーザー名、パスワードを指定する。
+mysql_database_for_laravel: mysql_database_for_laravel
+mysql_user_for_laravel: laravel_user
+mysql_password_for_laravel: mysql_password_for_laravel
+
+# laravelのプロジェクトを配置するディレクトリ
+laravel_dir: /var/www/sample_project/api/v1
+
+# 新しくlaravelプロジェクトを作成する場合は create
+# リモートリポジトリに存在するプロジェクトを利用する場合は clone
+# laravelプロジェクトを配置しない場合は none
+laravel_project: clone
+
+# laravel_projectが clone の場合にclone元のリポジトリを指定する。
+laravel_project_remote_repository: https://github.com/tabuchi-shoichi/laravel_skeleton_for_ansible.git
+
+# laravel_projectが create の場合は新規作成するプロジェクト名
+# laravel_projectが clone の場合はリポジトリのプロジェクト名を指定する。
+laravel_project_name: laravel_skeleton_for_ansible
+
+# nuxtのプロジェクトを配置するディレクトリ
+nuxt_dir: /var/www/sample_project
+
+# リモートリポジトリに存在するNuxtプロジェクトを利用する場合は clone
+# nuxtプロジェクトを配置しない場合は none
+nuxt_project: clone
+
+# nuxt_projectが clone の場合にclone元のリポジトリを指定する。
+Nuxt_project_remote_repository: https://github.com/tabuchi-shoichi/nuxt_skeleton_for_ansible.git
+
+# laravel_projectが clone の場合はリポジトリのプロジェクト名を指定する。
+nuxt_project_project_name: nuxt_project_skeleton_for_ansible

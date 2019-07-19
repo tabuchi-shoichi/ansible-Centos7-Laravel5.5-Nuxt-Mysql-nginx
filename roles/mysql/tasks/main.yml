@@ -1,0 +1,80 @@
+---
+- name: mariadbアンインストール
+  yum:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - mariadb-libs
+
+- name: mysqlリポジトリインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - http://repo.mysql.com/mysql-community-release-el7-7.noarch.rpm
+
+- name: mysqlと関連パッケージインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - mysql
+      - mysql-devel
+      - mysql-utilities
+      - mysql-server
+
+- name: /etc/my.cnfの設定を変更、文字コードをutf-8に設定する（日本語文字化け対策）
+  template:
+    src: _etc_my.cnf.j2
+    dest: /etc/my.cnf
+    mode: 0644
+
+- name: MySQL-pythonのインストール(これがないとmysqlモジュールが使えない)
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - MySQL-python
+
+- name: mysqld起動・自動起動設定
+  service:
+    name: mysqld.service
+    state: started
+    enabled: yes
+
+
+- name: rootのパスワード変更、rootのリモートアクセス拒否
+  mysql_user:
+    name: "root"
+    host: "{{ item }}"
+    password: "{{ mysql_root_password }}"
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost.localdomain
+    - localhost
+    
+- name: root接続設定ファイル作成
+  template:
+    src: .my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: anonymousユーザーの削除
+  mysql_user:
+    name: ""
+    host: "{{ item }}"
+    state: absent
+  with_items:
+    - localhost.localdomain
+
+- name: テストデータ削除
+  mysql_db:
+    db: test
+    state: absent
+
+- name: laravel用データベース、ユーザー作成
+  include: for_laravel.yml

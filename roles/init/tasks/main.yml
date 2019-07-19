@@ -1,0 +1,52 @@
+---
+- name: pingモジュール実行
+  ping:
+
+- name: centosの時刻を日本時刻(JST)に設定
+  copy:
+    src: /usr/share/zoneinfo/Japan
+    dest: /etc/localtime
+
+- name: binディレクトリのパスを通す
+  lineinfile:
+    dest: ~/.bash_profile
+    line: "{{ item }}"
+  with_items:
+    - export PATH=$PATH:/usr/local/bin
+
+- name: epelリポジトリのインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - epel-release
+
+- name: Remiリポジトリのインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+
+- name: git・wget・zip・unzip・gcc-c++・makeインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - git
+      - wget
+      - zip
+      - unzip
+      - gcc-c++
+      - make
+
+- name: selinux-pythonのインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - libselinux-python
+
+- name: selinux無効化
+  selinux:
+    state: disabled

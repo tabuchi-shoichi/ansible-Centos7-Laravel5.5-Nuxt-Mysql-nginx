@@ -1,0 +1,58 @@
+---
+- name: /var/wwwにlaravel用ディレクトリ追加
+  file:
+    path: "{{ laravel_dir }}"
+    state: directory
+
+- name: laravelプロジェクトが存在するか確認
+  stat:
+    path: "{{ laravel_dir }}/{{ laravel_project_name }}"
+  register: laravel_project_exist
+
+# laravelプロジェクトが存在しなければcloneし、初期設定を行う
+- block:
+  - name: remoteリポジトリからcloneする
+    git:
+      repo: "{{ laravel_project_remote_repository }}"
+      dest: "{{ laravel_dir }}/{{ laravel_project_name }}"
+
+  - name: composer install を実行
+    composer:
+      command: install
+      working_dir: "{{ laravel_dir }}/{{ laravel_project_name }}"
+
+  - name: .envの作成
+    copy:
+      src: "{{ laravel_dir }}/{{ laravel_project_name }}/.env.example"
+      dest: "{{ laravel_dir }}/{{ laravel_project_name }}/.env"
+      mode: 644
+      remote_src: yes
+
+  - name: APP_KEYの生成
+    shell: "cd {{ laravel_dir }}/{{ laravel_project_name }} && php artisan key:generate"
+
+  - name: .envのデータベースの設定
+    replace:
+      path: "{{ laravel_dir }}/{{ laravel_project_name }}/.env"
+      regexp: '{{ item.regexp }}'
+      replace: '{{ item.replace }}'
+    with_items:
+      - regexp: "DB_DATABASE=homestead"
+        replace: "DB_DATABASE={{ mysql_database_for_laravel }}"
+      - regexp: "DB_USERNAME=homestead"
+        replace: "DB_USERNAME={{ mysql_user_for_laravel }}"
+      - regexp: "DB_PASSWORD=secret"
+        replace: "DB_PASSWORD={{ mysql_password_for_laravel }}"
+
+  - name: cloneしたlaravelプロジェクトのstorageとbootstrap/cacheの権限をnginxが利用できるように変更
+    file:
+      path: "{{ item }}"
+      owner: nginx
+      group: nginx
+      state: directory
+      recurse: yes
+    with_items:
+      - "{{ laravel_dir }}/{{ laravel_project_name }}/storage"
+      - "{{ laravel_dir }}/{{ laravel_project_name }}/bootstrap/cache"
+
+  when: not laravel_project_exist.stat.exists

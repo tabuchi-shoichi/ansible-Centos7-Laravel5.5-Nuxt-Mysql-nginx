@@ -1,0 +1,29 @@
+---
+- name: firewalld起動・自動起動設定
+  service:
+    name: firewalld.service
+    state: started
+    enabled: yes
+
+- name: httpのポート(80)開放
+  firewalld:
+    service: http
+    permanent: True
+    state: enabled
+
+- name: httpsのポート(443)開放
+  firewalld:
+    service: https
+    permanent: True
+    state: enabled
+
+- name: mysqlのポート(3306)開放
+  firewalld:
+    service: mysql
+    permanent: True
+    state: enabled
+
+- name: firewalld再起動
+  service:
+    name: firewalld.service
+    state: restarted

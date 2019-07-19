@@ -1,0 +1,62 @@
+---
+- name: php7.2と関連パッケージインストール
+  yum:
+    name: "{{ packages }}"
+    enablerepo: epel,remi-php72
+  vars:
+    packages:
+      - php
+      - php-devel
+      - php-mbstring
+      - php-pear
+      - php-fpm
+      - php-mcrypt
+      - php-mysql
+      - php-xml
+      - php-gd
+
+- name: nginxからphp-fpmを使えるようにuser, group, 権限を変更
+  replace:
+    path: /etc/php-fpm.d/www.conf
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - regexp: "user = apache"
+      replace: "user = nginx"
+    - regexp: "group = apache"
+      replace: "group = nginx"
+    - regexp: ";listen.owner = nobody"
+      replace: "listen.owner = nginx"
+    - regexp: ";listen.group = nobody"
+      replace: "listen.group = nginx"
+
+- name: php-fpmをocketで通信するように変更
+  replace:
+    path: /etc/php-fpm.d/www.conf
+    regexp: "listen = 127.0.0.1:9000"
+    replace: "listen = /var/run/php-fpm/php-fpm.sock"
+
+- name: php-fpm起動・自動起動設定
+  service:
+    name: php-fpm.service
+    state: started
+    enabled: yes
+
+- name: composerがインストールされているか確認
+  stat: path=/usr/local/bin/composer
+  register: composer_bin
+
+# composerがインストールされていなければダウンロードしてからbinにインストール
+- block:
+  - name: composerダウンロード
+    get_url:
+      url: https://getcomposer.org/installer
+      dest: /tmp/installer
+
+  - name: composerをbinにインストール
+    shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin
+
+  - name: composer.pharとなっているのでcomposerにリネーム
+    shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+
+  when: not composer_bin.stat.exists

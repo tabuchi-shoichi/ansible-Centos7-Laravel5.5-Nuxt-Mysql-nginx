@@ -1,0 +1,41 @@
+---
+- name: nginx.repoを作成
+  template:
+    src: nginx.repo.j2
+    dest: /etc/yum.repos.d/nginx.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: nginxのインストール
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - nginx
+
+- name: nginx起動・自動起動設定
+  service:
+    name: nginx.service
+    state: started
+    enabled: yes
+
+- name: default.cnfがバックアップとして残っているか確認
+  stat:
+    path: /etc/nginx/conf.d/default.conf
+  register: default_cnf
+
+- name: default.cnfをバックアップとして残しておく
+  command: mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf_bk
+  when: default_cnf.stat.exists
+
+- name: laravel用cnfの設定
+  template:
+    src: laravel.cnf.j2
+    dest: /etc/nginx/conf.d/laravel.conf
+    mode: 0644
+
+- name: nginx再起動
+  service:
+    name: nginx.service
+    state: restarted

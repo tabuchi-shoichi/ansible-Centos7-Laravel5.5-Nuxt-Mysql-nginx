@@ -1,0 +1,22 @@
+---
+- name: /var/wwwにnuxt用ディレクトリ追加
+  file:
+    path: "{{ nuxt_dir }}"
+    state: directory
+
+- name: nuxtプロジェクトが存在するか確認
+  stat:
+    path: "{{ nuxt_dir }}/{{ nuxt_project_project_name }}"
+  register: nuxt_project_exist
+
+# nuxtプロジェクトが存在しなければcloneし、初期設定を行う
+- block:
+  - name: remoteリポジトリからcloneする
+    git:
+      repo: "{{ Nuxt_project_remote_repository }}"
+      dest: "{{ nuxt_dir }}/{{ nuxt_project_project_name }}"
+
+  - name: npm install を実行
+    shell: "cd {{ nuxt_dir }}/{{ nuxt_project_project_name }} && npm install"
+
+  when: not nuxt_project_exist.stat.exists

@@ -1,0 +1,21 @@
+---
+- name: nodejsがインストール済みか確認
+  yum:
+    list: nodejs.x86_64
+  register: nodejs
+
+# nodejsがインストールされていなければインストール
+- block:
+  - name: nodejsセットアップスクリプト実行
+    shell: curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+    args:
+      warn: no
+
+  - name: nodejsインストール
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - nodejs
+
+  when: nodejs.results | selectattr("yumstate", "match", "installed") | list | length == 0

@@ -1,0 +1,6 @@
+---
+- include: create_project.yml
+  when: "laravel_project =='create'"
+
+- include: git_clone.yml
+  when: "laravel_project =='clone'"

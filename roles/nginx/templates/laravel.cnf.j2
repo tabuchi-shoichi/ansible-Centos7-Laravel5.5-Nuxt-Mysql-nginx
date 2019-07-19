@@ -1,0 +1,51 @@
+# server {
+#     listen 80;
+#     server_name example.com;
+#     return 301 https://$host$request_uri;
+# }
+
+server{
+    listen 80;
+    
+    # listen 443 ssl;
+    # server_name example.com;
+
+    # ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    location / {
+        gzip            on;
+        gzip_types      text/plain application/xml text/css application/javascript;
+        gzip_min_length 1000;
+        
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:3000;
+    }
+
+    location /api/v1 {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:44300/;
+    }
+}
+
+server{
+    listen 44300;
+
+    root {{ laravel_dir }}/{{ laravel_project_name }}/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+ 
+    location ~ \.php$ {
+        fastcgi_pass   unix:/run/php-fpm/php-fpm.sock;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+}

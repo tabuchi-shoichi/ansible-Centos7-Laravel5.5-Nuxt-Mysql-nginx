@@ -1,0 +1,12 @@
+---
+- name: データベース作成
+  mysql_db:
+    name: "{{ mysql_database_for_laravel }}"
+    state: present
+
+- name: laravel用ユーザー作成
+  mysql_user:
+    name: "{{ mysql_user_for_laravel }}"
+    password: "{{ mysql_password_for_laravel }}"
+    priv: "{{ mysql_database_for_laravel }}.*:ALL"
+    state: present
