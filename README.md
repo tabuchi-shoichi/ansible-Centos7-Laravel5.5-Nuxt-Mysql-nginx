@@ -8,7 +8,8 @@
 - Mysql 5.6.44
 - Node.js 10.16.0
 - Nuxt.js 2.8.1
-- Elasticsearch 6.x
+- Java 8.0.x (オプション)
+- Elasticsearch 6.x (オプション)
 - その他ツール(git, wget, zip, unzip, gcc-c++, make)
 
 # 動作環境

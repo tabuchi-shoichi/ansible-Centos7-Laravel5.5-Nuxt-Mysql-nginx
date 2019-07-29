@@ -37,3 +37,6 @@ Nuxt_project_remote_repository: https://github.com/tabuchi-shoichi/nuxt_skeleton
 
 # laravel_projectが clone の場合はリポジトリのプロジェクト名を指定する。
 nuxt_project_project_name: nuxt_project_skeleton_for_ansible
+
+# Elasticsearchをインストールする場合はyes
+install_Elasticsearch: "no"
