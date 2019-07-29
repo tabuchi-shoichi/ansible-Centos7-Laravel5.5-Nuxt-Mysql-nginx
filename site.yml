@@ -11,4 +11,4 @@
     - laravel
     - nodejs
     - nuxt
-    - elasticsearch
+    - { role: elasticsearch, when: install_Elasticsearch == "yes" }
