@@ -1,0 +1,46 @@
+---
+  - name: JDK8インストール
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - java-1.8.0-openjdk-devel.x86_64
+
+  - name: GPGキーインストール
+    rpm_key:
+      key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+  - name: elasticsearch.repo設置
+    template:
+      src: elasticsearch.repo.j2
+      dest: /etc/yum.repos.d/elasticsearch.repo
+      mode: 0644
+
+  - name: elasticsearchインストール
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - elasticsearch
+
+  - name: ホストとポート設定
+    replace:
+      path: /etc/elasticsearch/elasticsearch.yml
+      regexp: '{{ item.regexp }}'
+      replace: '{{ item.replace }}'
+    with_items:
+      - regexp: '#network.host: 192.168.0.1'
+        replace: 'network.host: "localhost"'
+      - regexp: '#http.port: 9200'
+        replace: 'http.port: 9200'
+
+  - name: elasticsearch起動・自動起動設定
+    service:
+      name: elasticsearch.service
+      state: started
+      enabled: yes
+
+  - name: elasticsearch再起動
+    service:
+      name: elasticsearch.service
+      state: restarted
