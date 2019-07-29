@@ -8,6 +8,7 @@
 - Mysql 5.6.44
 - Node.js 10.16.0
 - Nuxt.js 2.8.1
+- Elasticsearch 6.x
 - その他ツール(git, wget, zip, unzip, gcc-c++, make)
 
 # 動作環境
@@ -17,10 +18,12 @@
 - 対象サーバー
   - CentOS7
   - 必須空きメモリ領域：1GByte
+    - Elasticsearchをインストールする場合は4GByte
   - 推奨空きメモリ領域：1.5GByte
 
 メモリを最低でも1GB以上確保してください。  
-512MB程度だとnpm insatall、Nuxtのbuild等が実行できない可能性があります。
+512MB程度だとnpm insatall、Nuxtのbuild等が実行できない可能性があります。  
+Elasticsearchをインストールする場合は最低でも4GB以上確保してください。
 
 # 使用例
 ## 設定
