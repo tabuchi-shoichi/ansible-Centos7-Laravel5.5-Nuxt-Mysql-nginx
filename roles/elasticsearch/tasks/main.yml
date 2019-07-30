@@ -34,6 +34,30 @@
       - regexp: '#http.port: 9200'
         replace: 'http.port: 9200'
 
+  - name: analysis-kuromojiがインストールされているか確認
+    stat: path=/usr/share/elasticsearch/plugins/analysis-kuromoji
+    register: analysis_kuromoji
+
+  - name: analysis-kuromojiインストール
+    shell: /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-kuromoji
+    when: not analysis_kuromoji.stat.exists
+
+  - name: analysis-icuがインストールされているか確認
+    stat: path=/usr/share/elasticsearch/plugins/analysis-icu
+    register: analysis_icu
+
+  - name: analysis-icuインストール
+    shell: /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-icu
+    when: not analysis_icu.stat.exists
+
+  - name: analysis-kuromoji-ipadic-neologdがインストールされているか確認
+    stat: path=/usr/share/elasticsearch/plugins/analysis-kuromoji-ipadic-neologd
+    register: analysis_kuromoji_ipadic_neologd
+
+  - name: analysis-kuromoji-ipadic-neologdインストール
+    shell: /usr/share/elasticsearch//bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-kuromoji-ipadic-neologd:7.1.0
+    when: not analysis_kuromoji_ipadic_neologd.stat.exists
+
   - name: elasticsearch起動・自動起動設定
     service:
       name: elasticsearch.service
