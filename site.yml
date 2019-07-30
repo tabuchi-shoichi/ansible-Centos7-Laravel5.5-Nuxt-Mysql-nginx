@@ -3,4 +3,12 @@
   remote_user: "{{ remote_user }}"
   become: True
   roles:
+    - init
+    - firewalld
+    - nginx
+    - php
+    - mysql
+    - laravel
+    - nodejs
+    - nuxt
     - { role: elasticsearch, when: install_Elasticsearch == "yes" }
