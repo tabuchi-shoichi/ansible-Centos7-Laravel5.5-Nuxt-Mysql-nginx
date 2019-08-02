@@ -1,0 +1,15 @@
+---
+  - name: mroongaリポジトリ追加
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - https://packages.groonga.org/centos/groonga-release-latest.noarch.rpm
+
+  - name: mroongaインストール
+    yum:
+      name: "{{ packages }}"
+      enablerepo: epel
+    vars:
+      packages:
+        - mysql-community-mroonga
