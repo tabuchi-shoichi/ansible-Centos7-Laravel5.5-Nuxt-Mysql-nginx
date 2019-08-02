@@ -40,3 +40,6 @@ nuxt_project_project_name: nuxt_project_skeleton_for_ansible
 
 # Elasticsearchをインストールする場合はyes
 install_Elasticsearch: "no"
+
+# mroongaをインストールする場合はyes
+install_mroonga: "no"

@@ -10,6 +10,7 @@
 - Nuxt.js 2.8.1
 - Java 8.0.x (オプション)
 - Elasticsearch 5.x (オプション)
+- mroonga latest (オプション)
 - その他ツール(git, wget, zip, unzip, gcc-c++, make)
 
 # 動作環境

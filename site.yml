@@ -12,3 +12,4 @@
     - nodejs
     - nuxt
     - { role: elasticsearch, when: install_Elasticsearch == "yes" }
+    - { role: mroonga, when: install_mroonga == "yes" }
